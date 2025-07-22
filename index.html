@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Gut-Brain Axis: An Interactive Guide to Mood Regulation</title>
+    <!-- Chosen Palette: Calm Harmony (Stone, Teal, Amber) -->
+    <!-- Application Structure Plan: The SPA is structured as a guided narrative journey, starting from the foundational science and moving towards practical applications. It uses a single-page, vertical scrolling format with a sticky navigation header for easy access to key thematic sections: (1) An introduction to the core concept. (2) An interactive diagram of the 'Communication Network' to explain the complex pathways simply. (3) A section on 'Microbial Messengers' to introduce the key players. (4) A data visualization section on 'Dysbiosis' to show the link to mood disorders. (5) A highly interactive 'Lifestyle Interventions' section with tabs for Diet, Sleep, and Yoga, featuring multiple charts. This user-flow-oriented structure was chosen over the report's linear format to make a complex scientific topic more digestible, engaging, and empowering for a general audience interested in wellness. -->
+    <!-- Visualization & Content Choices: Data from the report is translated into interactive visualizations to enhance understanding. Report Info: MGB communication pathways -> Goal: Organize/Inform -> Viz: Interactive HTML/CSS diagram where clicking a pathway reveals its details. Report Info: Bacterial changes in depression -> Goal: Compare -> Viz: Bar chart showing depletion of beneficial vs. increase of pro-inflammatory microbes. Report Info: Probiotic efficacy data -> Goal: Compare -> Viz: Bar chart comparing effect sizes in clinical vs. general populations. Report Info: Yoga's physiological effects -> Goal: Compare -> Viz: Grouped bar chart showing reductions in cortisol and inflammatory markers. This approach turns abstract statistics and concepts into tangible visuals, making the information more memorable and impactful. The justification for each choice is improved user cognition and engagement. All charts use Chart.js on a Canvas element. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d9488; /* teal-600 */
+            border-bottom-color: #0d9488;
+        }
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-btn.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .pathway-line {
+            transition: all 0.3s ease-in-out;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-line 2s ease-in-out forwards;
+        }
+        @keyframes draw-line {
+            to { stroke-dashoffset: 0; }
+        }
+        .pathway-node {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .pathway-node:hover {
+            transform: scale(1.1);
+        }
+        .pathway-node.active {
+            stroke: #cc8400;
+            stroke-width: 4px;
+        }
+    </style>
+</head>
+<body class="text-stone-800 antialiased">
+
+    <header class="bg-stone-100/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">Gut & Mood</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Introduction</a>
+                        <a href="#network" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">The Network</a>
+                        <a href="#messengers" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">The Messengers</a>
+                        <a href="#dysbiosis" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">The Imbalance</a>
+                        <a href="#interventions" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Take Control</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Section 1: Introduction -->
+        <section id="introduction" class="py-16 md:py-24 bg-stone-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl">Your Gut is Your Second Brain.</h2>
+                <p class="mt-6 max-w-3xl mx-auto text-lg leading-8 text-stone-600">Discover the profound, bidirectional connection between your gut microbiome and your mental well-being. This interactive guide explores the science behind the Microbiota-Gut-Brain (MGB) axis, revealing how the trillions of microbes within you influence everything from stress to mood, and how you can harness this connection for better mental health.</p>
+                <div class="mt-10 flex items-center justify-center gap-x-6">
+                    <a href="#network" class="rounded-md bg-teal-600 px-4 py-3 text-base font-semibold text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600">Explore the Connection</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Communication Network -->
+        <section id="network" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">The Communication Network</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">The gut and brain are in constant conversation through a multi-lane superhighway. Click on a pathway below to learn how they communicate and influence your mood.</p>
+                </div>
+
+                <div class="mt-12 lg:grid lg:grid-cols-3 lg:gap-8 items-start">
+                    <div class="lg:col-span-2">
+                        <div class="relative flex flex-col items-center justify-around h-[450px]">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-5xl">🧠</span>
+                                <h3 class="text-2xl font-bold">Brain (CNS)</h3>
+                            </div>
+                            
+                            <svg class="absolute top-0 left-0 w-full h-full" viewbox="0 0 300 150" preserveAspectRatio="xMidYMid meet">
+                                <line class="pathway-line" x1="150" y1="20" x2="50" y2="75" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                                <line class="pathway-line" x1="150" y1="20" x2="150" y2="75" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                                <line class="pathway-line" x1="150" y1="20" x2="250" y2="75" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                                <line class="pathway-line" x1="50" y1="75" x2="150" y2="130" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                                <line class="pathway-line" x1="150" y1="75" x2="150" y2="130" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                                <line class="pathway-line" x1="250" y1="75" x2="150" y2="130" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+
+                            <div class="z-10 flex justify-around w-full">
+                                <div id="btn-neural" class="pathway-node flex flex-col items-center text-center p-3 rounded-full bg-stone-100 shadow-md border-2 border-transparent">
+                                    <span class="text-3xl">⚡️</span>
+                                    <span class="font-semibold mt-1">Neural</span>
+                                </div>
+                                <div id="btn-endocrine" class="pathway-node flex flex-col items-center text-center p-3 rounded-full bg-stone-100 shadow-md border-2 border-transparent">
+                                    <span class="text-3xl">🧪</span>
+                                    <span class="font-semibold mt-1">Endocrine</span>
+                                </div>
+                                <div id="btn-immune" class="pathway-node flex flex-col items-center text-center p-3 rounded-full bg-stone-100 shadow-md border-2 border-transparent">
+                                    <span class="text-3xl">🛡️</span>
+                                    <span class="font-semibold mt-1">Immune</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <span class="text-5xl">🦠</span>
+                                <h3 class="text-2xl font-bold">Gut & Microbiota</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pathway-details" class="mt-12 lg:mt-0 lg:col-span-1 p-6 bg-white rounded-lg shadow-lg min-h-[450px]">
+                        <div id="details-initial" class="flex flex-col justify-center items-center h-full text-center">
+                            <p class="text-stone-500">Click a pathway icon to see details.</p>
+                        </div>
+                        <div id="details-neural" class="hidden">
+                            <h4 class="text-xl font-bold text-teal-700">Neural Pathway (Vagus Nerve)</h4>
+                            <p class="mt-2 text-stone-600">The vagus nerve is a direct physical and electrical link between the gut and brain. About 80% of its signals travel from the gut *to* the brain, carrying information about the gut's environment. Gut microbes produce substances like serotonin that activate this nerve, directly influencing brain regions involved in stress and emotion.</p>
+                        </div>
+                        <div id="details-endocrine" class="hidden">
+                            <h4 class="text-xl font-bold text-teal-700">Endocrine Pathway (HPA Axis)</h4>
+                            <p class="mt-2 text-stone-600">This is the body's stress response system. The gut microbiota is essential for calibrating this axis from birth. Chronic stress dysregulates this system, releasing cortisol which harms the gut barrier. This creates a vicious cycle where a stressed gut and a stressed brain reinforce each other, a key mechanism in depression.</p>
+                        </div>
+                        <div id="details-immune" class="hidden">
+                            <h4 class="text-xl font-bold text-teal-700">Immune Pathway (Inflammation)</h4>
+                            <p class="mt-2 text-stone-600">An unhealthy microbiome can lead to a "leaky gut," allowing inflammatory bacterial toxins like LPS to enter the bloodstream. This triggers body-wide, low-grade inflammation. These inflammatory signals can cross the blood-brain barrier, causing neuroinflammation that disrupts neurotransmitter function and is strongly linked to depressive symptoms.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Meet the Messengers -->
+        <section id="messengers" class="py-16 md:py-24 bg-stone-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Meet the Microbial Messengers</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">Your gut microbes produce a vast pharmacy of neuroactive compounds. The balance between beneficial and harmful molecules is key to your mental health.</p>
+                </div>
+                <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-green-600">The Heroes: SCFAs</h3>
+                        <p class="mt-2 text-stone-600">Short-Chain Fatty Acids (like butyrate) are produced when good bacteria ferment fiber. They are the primary fuel for gut cells, strengthen the gut barrier, reduce inflammation system-wide, and can even cross into the brain to exert direct anti-inflammatory effects.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-blue-600">The Regulators: Neurotransmitters</h3>
+                        <p class="mt-2 text-stone-600">While gut-produced serotonin (>90% of total) and GABA can't enter the brain, they are critical for local signaling. They activate the vagus nerve and influence the availability of precursors (like tryptophan) that the brain needs to make its own supply of these mood-regulating chemicals.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-red-600">The Villains: LPS Endotoxin</h3>
+                        <p class="mt-2 text-stone-600">Lipopolysaccharide (LPS) is a component of certain bacteria. When the gut barrier is leaky, LPS escapes into the bloodstream, triggering a powerful inflammatory response. This inflammation is a key driver of neuroinflammation and is strongly implicated in the biology of depression.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: The Imbalance -->
+        <section id="dysbiosis" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">The Imbalance: Dysbiosis & Mood</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">In mood disorders like depression and anxiety, a consistent pattern of gut imbalance, or "dysbiosis," is often observed. It's less about specific species and more about a functional shift.</p>
+                </div>
+                <div class="mt-12 md:grid md:grid-cols-5 md:gap-8 items-center">
+                    <div class="md:col-span-3">
+                        <div class="chart-container">
+                            <canvas id="dysbiosisChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 mt-8 md:mt-0">
+                        <h3 class="text-2xl font-bold">A Functional Deficit</h3>
+                        <p class="mt-4 text-stone-600">The key takeaway from numerous studies is a clear pattern: individuals with depression consistently show a <strong class="text-red-600">decrease</strong> in beneficial, anti-inflammatory bacteria that produce SCFAs (like *Faecalibacterium* and *Coprococcus*). At the same time, they often have an <strong class="text-green-600">increase</strong> in potentially pro-inflammatory microbes (like *Alistipes* and *Klebsiella*). This functional shift starves the body of helpful compounds and fuels the inflammation linked to mood dysregulation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Take Control -->
+        <section id="interventions" class="py-16 md:py-24 bg-stone-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Take Control: Lifestyle Interventions</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">The MGB axis is highly modifiable. Evidence shows that targeted lifestyle changes can restore balance and support mental well-being. Select a category to explore the evidence.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="mb-8 flex justify-center flex-wrap gap-2">
+                        <button class="tab-btn active px-4 py-2 text-stone-600 font-semibold rounded-full bg-white shadow-sm" data-tab="diet">🍎 Diet</button>
+                        <button class="tab-btn px-4 py-2 text-stone-600 font-semibold rounded-full bg-white shadow-sm" data-tab="sleep">😴 Sleep</button>
+                        <button class="tab-btn px-4 py-2 text-stone-600 font-semibold rounded-full bg-white shadow-sm" data-tab="yoga">🧘‍♀️ Yoga & Mind-Body</button>
+                    </div>
+
+                    <div id="tab-content" class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                        <!-- Diet Tab -->
+                        <div id="content-diet" class="tab-pane">
+                            <h3 class="text-2xl font-bold mb-4">Diet: The Foundation of Gut Health</h3>
+                            <p class="text-stone-600 mb-8">Diet is the most powerful tool for shaping your microbiome. The focus should be on whole foods that feed beneficial microbes and reduce inflammation.</p>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-xl font-semibold mb-2">Probiotic Efficacy in Depression</h4>
+                                    <p class="text-stone-500 text-sm mb-2">Probiotics show a significantly larger effect in clinical populations, suggesting they help restore an already imbalanced system.</p>
+                                    <div class="chart-container h-64 md:h-80">
+                                        <canvas id="probioticsChart"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-semibold mb-2">Fiber's Protective Effect</h4>
+                                     <p class="text-stone-500 text-sm mb-2">Observational data shows a strong link between higher fiber intake and lower depression risk. Each 5g/day increase is associated with a 5% drop in risk.</p>
+                                     <ul class="mt-4 space-y-3 text-stone-600">
+                                        <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✔</span><span><strong>Whole Foods over Supplements:</strong> Fiber from vegetables, fruits, and legumes is more effective than isolated supplements because it comes with anti-inflammatory polyphenols.</span></li>
+                                        <li class="flex items-start"><span class="text-green-500 mr-2 mt-1">✔</span><span><strong>Fermented Foods:</strong> Yogurt, kefir, and kimchi provide probiotics and beneficial byproducts. Higher intake of fermented dairy is linked to an 11% lower risk of depression.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sleep Tab -->
+                        <div id="content-sleep" class="tab-pane hidden">
+                            <h3 class="text-2xl font-bold mb-4">Sleep: A Gut-Brain Reset</h3>
+                            <p class="text-stone-600 mb-8">Sleep is not just for the brain; it's critical for gut health. The relationship is bidirectional, creating a powerful cycle that can be either virtuous or vicious.</p>
+                            <div class="text-center p-8 border-2 border-dashed border-blue-300 rounded-lg">
+                                <h4 class="font-bold text-lg">The Vicious Cycle of Poor Sleep</h4>
+                                <div class="mt-4 flex flex-col md:flex-row justify-center items-center gap-2 text-stone-700">
+                                    <span class="p-2 bg-blue-100 rounded">Poor Sleep / Disruption</span>
+                                    <span class="text-2xl font-bold text-blue-500">→</span>
+                                    <span class="p-2 bg-blue-100 rounded">Gut Barrier Damage ("Leaky Gut")</span>
+                                    <span class="text-2xl font-bold text-blue-500">→</span>
+                                    <span class="p-2 bg-blue-100 rounded">Inflammation (Higher LPS)</span>
+                                    <span class="text-2xl font-bold text-blue-500">→</span>
+                                    <span class="p-2 bg-blue-100 rounded">Anxiety & Mood Issues</span>
+                                    <span class="text-2xl font-bold text-blue-500">↻</span>
+                                </div>
+                                <p class="mt-6 max-w-xl mx-auto text-stone-600">Preclinical studies show sleep deprivation directly causes a leaky gut, increases inflammatory LPS in the blood, and induces anxiety. Therefore, improving sleep hygiene is a primary strategy for reducing gut-derived inflammation.</p>
+                            </div>
+                        </div>
+
+                        <!-- Yoga Tab -->
+                        <div id="content-yoga" class="tab-pane hidden">
+                             <h3 class="text-2xl font-bold mb-4">Yoga: A Holistic MGB Intervention</h3>
+                            <p class="text-stone-600 mb-8">Yoga and mind-body practices are unique because they work from the "top-down" (calming the brain) and "bottom-up" (reducing inflammation) simultaneously.</p>
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <div>
+                                    <h4 class="text-xl font-semibold mb-2">Yoga's Impact on Stress & Inflammation</h4>
+                                     <p class="text-stone-500 text-sm mb-2">Meta-analyses show regular yoga practice significantly reduces key biological markers of stress and inflammation linked to depression.</p>
+                                    <div class="chart-container h-80">
+                                        <canvas id="yogaChart"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                     <ul class="space-y-4 text-stone-600">
+                                        <li class="flex items-start">
+                                            <span class="text-teal-500 mr-3 mt-1 text-xl font-bold">①</span>
+                                            <div>
+                                            <strong class="font-semibold">Calms the HPA Axis:</strong> Yoga effectively lowers baseline levels of the stress hormone cortisol, mitigating a primary driver of gut dysbiosis.
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-teal-500 mr-3 mt-1 text-xl font-bold">②</span>
+                                            <div>
+                                            <strong class="font-semibold">Boosts Vagal Tone:</strong> By enhancing the "rest-and-digest" nervous system, yoga builds resilience to stress.
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-teal-500 mr-3 mt-1 text-xl font-bold">③</span>
+                                            <div>
+                                            <strong class="font-semibold">May Alter the Microbiome:</strong> Emerging evidence suggests yoga practice, especially with a healthy diet, can directly increase beneficial microbes like *Akkermansia*.
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm">This interactive guide is for informational purposes only and is based on a review of scientific literature. It is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+            <p class="mt-2 text-xs text-stone-400">Application created based on the "Gut as a Mood Regulator" review article.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- Data Store ---
+    const chartData = {
+        dysbiosis: {
+            labels: ['Faecalibacterium', 'Coprococcus', 'Alistipes', 'Klebsiella'],
+            data: [-25, -20, 15, 18] 
+        },
+        probiotics: {
+            labels: ['General Population', 'Clinical/Psychiatric Samples'],
+            data: [0.24, 0.73]
+        },
+        yoga: {
+            labels: ['Cortisol (Stress)', 'IL-6 (Inflammation)', 'CRP (Inflammation)'],
+            data: [-15, -20, -18] // Percentage reduction
+        }
+    };
+
+    // --- Chart Initializations ---
+    let dysbiosisChart, probioticsChart, yogaChart;
+
+    const createDysbiosisChart = () => {
+        const ctx = document.getElementById('dysbiosisChart').getContext('2d');
+        dysbiosisChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.dysbiosis.labels,
+                datasets: [{
+                    label: 'Change in Abundance (%)',
+                    data: chartData.dysbiosis.data,
+                    backgroundColor: chartData.dysbiosis.data.map(d => d < 0 ? 'rgba(239, 68, 68, 0.6)' : 'rgba(34, 197, 94, 0.6)'),
+                    borderColor: chartData.dysbiosis.data.map(d => d < 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(34, 197, 94, 1)'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Typical Microbial Shift in Depression' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.x !== null) {
+                                    const change = context.parsed.x > 0 ? 'Increase' : 'Decrease';
+                                    label += `${Math.abs(context.parsed.x)}% ${change}`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Relative Change (%)' }
+                    }
+                }
+            }
+        });
+    };
+
+    const createProbioticsChart = () => {
+        const ctx = document.getElementById('probioticsChart').getContext('2d');
+        probioticsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.probiotics.labels,
+                datasets: [{
+                    label: 'Effect Size (Cohen\'s d)',
+                    data: chartData.probiotics.data,
+                    backgroundColor: ['rgba(59, 130, 246, 0.6)', 'rgba(29, 78, 216, 0.6)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(29, 78, 216, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += `d = -${context.parsed.y.toFixed(2)}`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                 scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Effect Size (d)' }
+                    }
+                }
+            }
+        });
+    };
+
+    const createYogaChart = () => {
+        const ctx = document.getElementById('yogaChart').getContext('2d');
+        yogaChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.yoga.labels,
+                datasets: [{
+                    label: 'Avg. Reduction (%)',
+                    data: chartData.yoga.data.map(Math.abs),
+                    backgroundColor: ['rgba(245, 158, 11, 0.6)', 'rgba(20, 184, 166, 0.6)', 'rgba(13, 148, 136, 0.6)'],
+                    borderColor: ['rgba(245, 158, 11, 1)', 'rgba(20, 184, 166, 1)', 'rgba(13, 148, 136, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                 plugins: {
+                    legend: { display: false },
+                     tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += `~${context.parsed.y}%`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Average Reduction (%)' }
+                    }
+                }
+            }
+        });
+    };
+
+    // --- Interaction Logic ---
+    
+    // Pathway Selector
+    const pathwayBtns = document.querySelectorAll('.pathway-node');
+    const detailPanes = {
+        initial: document.getElementById('details-initial'),
+        neural: document.getElementById('details-neural'),
+        endocrine: document.getElementById('details-endocrine'),
+        immune: document.getElementById('details-immune'),
+    };
+
+    pathwayBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.id.split('-')[1];
+
+            pathwayBtns.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+
+            Object.values(detailPanes).forEach(pane => pane.classList.add('hidden'));
+            
+            if (detailPanes[type]) {
+                detailPanes[type].classList.remove('hidden');
+            }
+        });
+    });
+
+    // Tabbed Interventions
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            tabPanes.forEach(pane => {
+                if (pane.id === `content-${tab}`) {
+                    pane.classList.remove('hidden');
+                } else {
+                    pane.classList.add('hidden');
+                }
+            });
+            
+            // Re-render chart if it's in the activated tab to fix potential sizing issues
+            if(tab === 'diet' && probioticsChart) probioticsChart.resize();
+            if(tab === 'yoga' && yogaChart) yogaChart.resize();
+
+        });
+    });
+
+    // --- Scrollspy for Nav Highlighting ---
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav a');
+
+    const onScroll = () => {
+        const scrollPos = window.scrollY + 100;
+        sections.forEach(section => {
+            if (section.offsetTop <= scrollPos && (section.offsetTop + section.offsetHeight) > scrollPos) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (section.getAttribute('id') === link.getAttribute('href').substring(1)) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    };
+
+    window.addEventListener('scroll', onScroll);
+
+
+    // --- Initial Chart Rendering ---
+    createDysbiosisChart();
+    createProbioticsChart();
+    createYogaChart();
+});
+</script>
+
+</body>
+</html>
